@@ -8160,30 +8160,6 @@ RCPP_MODULE(ht4sa) {
             .field("missing_values", &LengthCompData::missing_values)
             ;
 
-    class_<MASModel>("MASModel")
-            .constructor()
-            .field("nyears", &MASModel::nyears)
-            .field("nseasons", &MASModel::nseasons)
-            .field("nages", &MASModel::nages)
-            .field("ages", &MASModel::ages)
-            .field("max_line_searches", &MASModel::max_line_searches)
-            .field("print_interval", &MASModel::print_interval)
-            .field("tolerance", &MASModel::tolerance)
-            .field("max_iterations", &MASModel::max_iterations)
-            .field("catch_season_offset", &MASModel::catch_season_offset)
-            .field("compute_variance_for_derived_quantities", &MASModel::compute_variance_for_derived_quantities)
-            .field("spawning_season_offset", &MASModel::spawning_season_offset)
-            .field("survey_season_offset", &MASModel::survey_season_offset)
-            .field("extended_plus_group", &MASModel::extended_plus_group)
-            .method("AddFleet", &MASModel::AddFleet)
-            .method("AddSurvey", &MASModel::AddSurvey)
-            .method("AddPopulation", &MASModel::AddPopulation)
-            .method("Run", &MASModel::Run)
-            .method("RunOperatingModel", &MASModel::RunOM)
-            .method("GetOutput", &MASModel::GetOuptput)
-            .method("GetJSONConfig", &MASModel::GetJSONConfig)
-            .method("GetJSONData", &MASModel::GetJSONData)
-            .method("Reset", &MASModel::Reset);
 }
 
 #endif /* R4MAS_HPP */
