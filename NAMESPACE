@@ -1,0 +1,3 @@
+useDynLib(ht4sa, .registration=TRUE)
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
