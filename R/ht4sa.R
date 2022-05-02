@@ -19,7 +19,7 @@ print("Please use mpi.quit() to quit R")
 }
 
 
-
+#run on mpi child
 run_ss_child <- function(selex_options_df,
                          begin,
                          end,
