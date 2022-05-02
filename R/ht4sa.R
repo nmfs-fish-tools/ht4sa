@@ -1,5 +1,6 @@
 
 
+
 library(r4ss)
 library(Rmpi)
 
@@ -39,7 +40,7 @@ run_ss_child <- function(selex_options_df,
   {
     #_____________________________________________________________________________________________________________________________
     # define directory structure
-    model_name = paste0(selex_options_df[i, ], collapse = "_")
+    model_name = paste0(selex_options_df[i,], collapse = "_")
     dir_run = paste0(dir_model, model_name_stem, model_name, "/")
     dir.create(dir_run, recursive = TRUE, showWarnings = FALSE)
     dir_plot = paste0(proj_dir,
@@ -81,9 +82,9 @@ run_ss_child <- function(selex_options_df,
     
     # update selex params
     idx_f17 = grep("F17", rownames(tmp_ctl$size_selex_parms))
-    tmp_ctl$size_selex_parms = tmp_ctl$size_selex_parms[-idx_f17, ]
+    tmp_ctl$size_selex_parms = tmp_ctl$size_selex_parms[-idx_f17,]
     idx_f18 = grep("F18", rownames(tmp_ctl$size_selex_parms))
-    tmp_ctl$size_selex_parms = tmp_ctl$size_selex_parms[-idx_f18, ]
+    tmp_ctl$size_selex_parms = tmp_ctl$size_selex_parms[-idx_f18,]
     idx_f16_tail = tail(grep("F16", rownames(tmp_ctl$size_selex_parms)), n =
                           1)
     # if sex selex offset
@@ -98,14 +99,14 @@ run_ss_child <- function(selex_options_df,
                        ncol = 14)
     }
     colnames(new_f17) = colnames(tmp_ctl$size_selex_parms)
-    new_f17[1, 1:7] = c(-1, 13, selex_options_df$spline_option[i], 0, 0, 0, -1)
+    new_f17[1, 1:7] = c(-1, 13, selex_options_df$spline_option[i], 0, 0, 0,-1)
     if (selex_options_df$cubic_spline[i])
     {
-      new_f17[2, 1:7] = c(0, 2e30, 1e30, 0, 0, 0, -1)
-      new_f17[3, 1:7] = c(0, 2e30, 1e30, 0, 0, 0, -1)
+      new_f17[2, 1:7] = c(0, 2e30, 1e30, 0, 0, 0,-1)
+      new_f17[3, 1:7] = c(0, 2e30, 1e30, 0, 0, 0,-1)
     } else{
-      new_f17[2, 1:7] = c(-0.001, 1, 0.13, 0, 0, 0, -1)
-      new_f17[3, 1:7] = c(-1, 0.001, -0.03, 0, 0, 0, -1)
+      new_f17[2, 1:7] = c(-0.001, 1, 0.13, 0, 0, 0,-1)
+      new_f17[3, 1:7] = c(-1, 0.001,-0.03, 0, 0, 0,-1)
     }
     # node placement
     tmp_nodes = selex_options_df$nodes[i]
@@ -116,14 +117,14 @@ run_ss_child <- function(selex_options_df,
     ) / 5) * 5
     for (j in 1:tmp_nodes)
     {
-      new_f17[3 + j, 1:7] = c(0, 300, tmp_nodes_loc[j], 0, 0, 0, -1)
+      new_f17[3 + j, 1:7] = c(0, 300, tmp_nodes_loc[j], 0, 0, 0,-1)
     }
     # selex values at nodes
     for (j in 1:tmp_nodes)
     {
       if (j == 1)
       {
-        new_f17[(3 + tmp_nodes) + j, 1:7] = c(-9, 7, 0, 0, 0, 0, -1)
+        new_f17[(3 + tmp_nodes) + j, 1:7] = c(-9, 7, 0, 0, 0, 0,-1)
       } else {
         new_f17[(3 + tmp_nodes) + j, 1:7] = c(-9, 7, 0, 0, 0, 0, 2)
       }
@@ -131,17 +132,17 @@ run_ss_child <- function(selex_options_df,
     # if sex selex offset
     if (selex_options_df$male_option[i] == 2)
     {
-      new_f17[nrow(new_f17) - 3, 1:7] = c(195, 205, 200, 0, 0, 0, -1)
-      new_f17[nrow(new_f17) - 2, 1:7] = c(-1, 1, 0, 0, 0, 0, -1)
+      new_f17[nrow(new_f17) - 3, 1:7] = c(195, 205, 200, 0, 0, 0,-1)
+      new_f17[nrow(new_f17) - 2, 1:7] = c(-1, 1, 0, 0, 0, 0,-1)
       new_f17[nrow(new_f17) - 1, 1:7] = c(-9, 7, 0, 0, 0, 0, 3)
       new_f17[nrow(new_f17), 1:7] = c(-9, 7, 0, 0, 0, 0, 3)
     }
     new_f17 = as.data.frame(new_f17)
     
-    tmp_ctl$size_selex_parms = rbind(tmp_ctl$size_selex_parms[1:idx_f16_tail, ],
+    tmp_ctl$size_selex_parms = rbind(tmp_ctl$size_selex_parms[1:idx_f16_tail,],
                                      new_f17,
                                      new_f17,
-                                     tmp_ctl$size_selex_parms[(idx_f16_tail + 1):nrow(tmp_ctl$size_selex_parms), ])
+                                     tmp_ctl$size_selex_parms[(idx_f16_tail + 1):nrow(tmp_ctl$size_selex_parms),])
     
     
     SS_writectl(
@@ -235,16 +236,16 @@ run_ss_child <- function(selex_options_df,
 
 #Run model in parallel
 run_ss_ht4sa_MPI -> function(selex_options_df,
-begin,
-end,
-proj_dir,
-dir_utility,
-dir_model,
-dir_model_source,
-model_name_stem,
-dir_input_files,
-dir_ss,
-TESTING = FALSE) {
+                             begin,
+                             end,
+                             proj_dir,
+                             dir_utility,
+                             dir_model,
+                             dir_model_source,
+                             model_name_stem,
+                             dir_input_files,
+                             dir_ss,
+                             TESTING = FALSE) {
   id <- mpi.comm.rank(comm = 0)
   ns <-  mpi.universe.size() - 1
   
@@ -323,7 +324,7 @@ run_ht4sa_ss_local -> function(selex_options_df,
   {
     #_____________________________________________________________________________________________________________________________
     # define directory structure
-    model_name = paste0(selex_options_df[i, ], collapse =
+    model_name = paste0(selex_options_df[i,], collapse =
                           "_")
     dir_run = paste0(dir_model, model_name_stem, model_name, "/")
     dir.create(dir_run, recursive =
@@ -368,9 +369,9 @@ run_ht4sa_ss_local -> function(selex_options_df,
     
     # update selex params
     idx_f17 = grep("F17", rownames(tmp_ctl$size_selex_parms))
-    tmp_ctl$size_selex_parms = tmp_ctl$size_selex_parms[-idx_f17, ]
+    tmp_ctl$size_selex_parms = tmp_ctl$size_selex_parms[-idx_f17,]
     idx_f18 = grep("F18", rownames(tmp_ctl$size_selex_parms))
-    tmp_ctl$size_selex_parms = tmp_ctl$size_selex_parms[-idx_f18, ]
+    tmp_ctl$size_selex_parms = tmp_ctl$size_selex_parms[-idx_f18,]
     idx_f16_tail = tail(grep("F16", rownames(tmp_ctl$size_selex_parms)), n =
                           1)
     # if sex selex offset
@@ -386,14 +387,14 @@ run_ht4sa_ss_local -> function(selex_options_df,
                        ncol = 14)
     }
     colnames(new_f17) = colnames(tmp_ctl$size_selex_parms)
-    new_f17[1, 1:7] = c(-1, 13, selex_options_df$spline_option[i], 0, 0, 0, -1)
+    new_f17[1, 1:7] = c(-1, 13, selex_options_df$spline_option[i], 0, 0, 0,-1)
     if (selex_options_df$cubic_spline[i])
     {
-      new_f17[2, 1:7] = c(0, 2e30, 1e30, 0, 0, 0, -1)
-      new_f17[3, 1:7] = c(0, 2e30, 1e30, 0, 0, 0, -1)
+      new_f17[2, 1:7] = c(0, 2e30, 1e30, 0, 0, 0,-1)
+      new_f17[3, 1:7] = c(0, 2e30, 1e30, 0, 0, 0,-1)
     } else{
-      new_f17[2, 1:7] = c(-0.001, 1, 0.13, 0, 0, 0, -1)
-      new_f17[3, 1:7] = c(-1, 0.001, -0.03, 0, 0, 0, -1)
+      new_f17[2, 1:7] = c(-0.001, 1, 0.13, 0, 0, 0,-1)
+      new_f17[3, 1:7] = c(-1, 0.001,-0.03, 0, 0, 0,-1)
     }
     # node placement
     tmp_nodes = selex_options_df$nodes[i]
@@ -404,14 +405,14 @@ run_ht4sa_ss_local -> function(selex_options_df,
     ) / 5) * 5
     for (j in 1:tmp_nodes)
     {
-      new_f17[3 + j, 1:7] = c(0, 300, tmp_nodes_loc[j], 0, 0, 0, -1)
+      new_f17[3 + j, 1:7] = c(0, 300, tmp_nodes_loc[j], 0, 0, 0,-1)
     }
     # selex values at nodes
     for (j in 1:tmp_nodes)
     {
       if (j == 1)
       {
-        new_f17[(3 + tmp_nodes) + j, 1:7] = c(-9, 7, 0, 0, 0, 0, -1)
+        new_f17[(3 + tmp_nodes) + j, 1:7] = c(-9, 7, 0, 0, 0, 0,-1)
       } else {
         new_f17[(3 + tmp_nodes) + j, 1:7] = c(-9, 7, 0, 0, 0, 0, 2)
       }
@@ -420,19 +421,19 @@ run_ht4sa_ss_local -> function(selex_options_df,
     if (selex_options_df$male_option[i] ==
         2)
     {
-      new_f17[nrow(new_f17) - 3, 1:7] = c(195, 205, 200, 0, 0, 0, -1)
+      new_f17[nrow(new_f17) - 3, 1:7] = c(195, 205, 200, 0, 0, 0,-1)
       new_f17[nrow(new_f17) -
-                2, 1:7] = c(-1, 1, 0, 0, 0, 0, -1)
+                2, 1:7] = c(-1, 1, 0, 0, 0, 0,-1)
       new_f17[nrow(new_f17) -
                 1, 1:7] = c(-9, 7, 0, 0, 0, 0, 3)
       new_f17[nrow(new_f17), 1:7] = c(-9, 7, 0, 0, 0, 0, 3)
     }
     new_f17 = as.data.frame(new_f17)
     
-    tmp_ctl$size_selex_parms = rbind(tmp_ctl$size_selex_parms[1:idx_f16_tail, ],
+    tmp_ctl$size_selex_parms = rbind(tmp_ctl$size_selex_parms[1:idx_f16_tail,],
                                      new_f17,
                                      new_f17,
-                                     tmp_ctl$size_selex_parms[(idx_f16_tail + 1):nrow(tmp_ctl$size_selex_parms), ])
+                                     tmp_ctl$size_selex_parms[(idx_f16_tail + 1):nrow(tmp_ctl$size_selex_parms),])
     
     
     SS_writectl(
