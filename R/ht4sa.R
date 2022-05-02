@@ -234,7 +234,17 @@ run_ss_child <- function(selex_options_df,
 }
 
 #Run model in parallel
-run_ss_MPI -> function(selex_options_df, TESTING = FALSE) {
+run_ss_ht4sa_MPI -> function(selex_options_df,
+begin,
+end,
+proj_dir,
+dir_utility,
+dir_model,
+dir_model_source,
+model_name_stem,
+dir_input_files,
+dir_ss,
+TESTING = FALSE) {
   id <- mpi.comm.rank(comm = 0)
   ns <-  mpi.universe.size() - 1
   
