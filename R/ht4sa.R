@@ -1,4 +1,23 @@
 
+library(r4ss)
+library(Rmpi)
+
+# Load the R MPI package if it is not already loaded.
+if (!is.loaded("mpi_initialize")) {
+library("Rmpi")
+}
+
+.Last <- function(){
+if (is.loaded("mpi_initialize")){
+if (mpi.comm.size(1) > 0){
+  print("Please use mpi.close.Rslaves() to close slaves.")
+  mpi.close.Rslaves()
+}
+print("Please use mpi.quit() to quit R")
+.Call("mpi_finalize")
+}
+}
+
 
 
 run_ss_child <- function(selex_options_df,
