@@ -235,7 +235,7 @@ run_ss_child <- function(selex_options_df,
 }
 
 #Run model in parallel
-run_ss_ht4sa_MPI -> function(selex_options_df,
+run_ss_ht4sa_MPI <- function(selex_options_df,
                              begin,
                              end,
                              proj_dir,
@@ -309,7 +309,7 @@ run_ss_ht4sa_MPI -> function(selex_options_df,
 
 
 #run models sequentially
-run_ht4sa_ss_local -> function(selex_options_df,
+run_ht4sa_ss_local <- function(selex_options_df,
                                proj_dir,
                                dir_utility,
                                dir_model,
