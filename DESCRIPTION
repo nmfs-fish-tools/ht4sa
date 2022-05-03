@@ -7,5 +7,4 @@ Author: Your Name
 Maintainer: Your Name <your@email.com>
 Description: High throughput computing for stock assessment.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.8)
-LinkingTo: Rcpp
+Imports: r4ss,Rmpi

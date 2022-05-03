@@ -1,3 +1,8 @@
 #useDynLib(ht4sa, .registration=TRUE)
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")
+export(run_ss_child)
+export(run_ss_child2)
+export(run_ht4sa_ss_MPI)
+export(run_ht4sa_ss_local)
+importFrom(r4ss, SS_readctl)
