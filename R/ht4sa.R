@@ -345,9 +345,8 @@ run_ht4sa_ss_local <- function(selex_options_df,
                                dir_input_files,
                                dir_ss,
                                TESTING = FALSE) {
-  print(selex_options_df)
+
   # loop over options
-  #TESTING = FALSE
   for (i in 1:nrow(selex_options_df))
   {
     print(paste0("option ", i))
