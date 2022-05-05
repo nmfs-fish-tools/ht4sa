@@ -7,4 +7,4 @@ Author: Your Name
 Maintainer: Your Name <your@email.com>
 Description: High throughput computing for stock assessment.
 License: GPL (>= 2)
-Imports: r4ss,Rmpi
+Imports: devtools, r4ss,Rmpi

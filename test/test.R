@@ -5,7 +5,7 @@ library(ht4sa)
 library(Rmpi)
 library(r4ss)
 
-source("../R/ht4sa.R")
+#source("../R/ht4sa.R")
 
 
 #_____________________________________________________________________________________________________________________________
@@ -26,7 +26,7 @@ print(dir_input_files)
                                      sigmaR=c(0.3,0.4,0.5),
                                      stringsAsFactors=FALSE)
 
-print(nrow(testing_options_df))
+
 
 b<- run_ht4sa_ss_MPI(testing_options_df,
                              proj_dir,

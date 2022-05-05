@@ -245,7 +245,6 @@ run_ss_child <- function(selex_options_df,
 }
 
 #Run model in parallel
-#' @export
 run_ht4sa_ss_MPI <- function(selex_options_df,
                              proj_dir,
                              dir_utility,
@@ -293,9 +292,8 @@ run_ht4sa_ss_MPI <- function(selex_options_df,
     mpi.bcast.Rfun2slave()
     #pass the function to all slaves
     
-    # show(ht4sa::run_ss_child)
     mpi.bcast.Robj2slave(obj=r4ss::SS_readctl)
-    mpi.bcast.Robj2slave(run_ss_child)
+    mpi.bcast.Robj2slave(ht4sa::run_ss_child, all = TRUE)
 
 
     print("broadcasting run....")
@@ -335,7 +333,6 @@ run_ht4sa_ss_MPI <- function(selex_options_df,
 
 
 #run models sequentially
-#' @export
 run_ht4sa_ss_local <- function(selex_options_df,
                                proj_dir,
                                dir_utility,
