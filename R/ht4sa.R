@@ -39,6 +39,9 @@ run_ss_child <- function(testing_options_df,
                          dir_input_files,
                          dir_ss,
                          TESTING = FALSE) {
+  
+  #hard code for now
+  exe_path<-"/Users/mattadmin/ht4sa/bin"
   print(Sys.info()['sysname'])
   print(begin[mpi.comm.rank()])
   print(end[mpi.comm.rank()])
@@ -145,19 +148,18 @@ run_ss_child <- function(testing_options_df,
         stop("Error: Bad model settings.")
       }
     } else{
-      print(paste0(paste0(
-        "powershell cd ", dir_run, " ; ./ss_win.exe"
-      )))
+
       # system(paste0("powershell cd ",dir_run," ; ./ss_win.exe"))
       if (print(Sys.info()['sysname']) == "Darwin") {
-        # system(paste0("cd ",dir_run))
-        # system("./ss_osx")
+        system(paste0("cd ", dir_run))
+        setwd(dir_run)
+        system(paste0(exe_path,"/ss_osx"))
       } else if (print(Sys.info()['sysname']) == "Linux") {
-        # system(paste0("cd ",dir_run))
-        # system("./ss_osx")
+        system(paste0("cd ", dir_run))
+        setwd(dir_run)
+        system(paste0(exe_path,"/ss_linux"))
       } else if (print(Sys.info()['sysname']) == "Windows") {
-        # system(paste0("cd ",dir_run))
-        # system("./ss_osx")
+
       }
     }
   }

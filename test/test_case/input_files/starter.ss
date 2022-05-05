@@ -4,9 +4,8 @@
 #_User_support_available_at:NMFS.Stock.Synthesis@noaa.gov
 #_User_info_available_at:https://vlab.noaa.gov/group/stock-synthesis
 #_Source_code_at:_https://github.com/nmfs-stock-synthesis/stock-synthesis
-
-BSH_n.dat
-BSH_n.ctl
+data.ss
+control.ss
 0 # 0=use init values in control file; 1=use ss.par
 1 # run display detail (0,1,2)
 1 # detailed output (0=minimal for data-limited, 1=high (w/ wtatage.ss_new), 2=brief, 3=custom) 
