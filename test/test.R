@@ -27,7 +27,7 @@ print(dir_input_files)
                                      stringsAsFactors=FALSE)
 
 
-
+#run cases in parallel
 b<- run_ht4sa_ss_MPI(testing_options_df,
                              proj_dir,
                              dir_utility,
