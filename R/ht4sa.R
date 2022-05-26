@@ -3,6 +3,7 @@
 
 
 
+
 library(r4ss)
 library(Rmpi)
 
@@ -24,6 +25,66 @@ if (!is.loaded("mpi_initialize")) {
   }
 }
 
+#
+#helper class for recusively creating
+#parameter set.
+#
+setClass("RecursiveCombinations",
+         representation(
+           count = "integer",
+           current = "integer",
+           source = "list",
+           combos = "list"))
+
+
+
+#
+#Recursively creates a parameter set based 
+#on all the possible combinations of parameters
+#in the Rcombos@source.
+#
+ht4sa_combinations<-function(current = as.integer(),working = vector(), Rcombos = "RecursiveCombinations"){
+  if (current == 1) {
+    # v= c();
+    for(i in 1:length(Rcombos@source[[1]])){
+      v=c()
+      v<- append(v, Rcombos@source[[1]][i])
+      Rcombos<-combinations(current+1,v,Rcombos)
+    }
+  } else if(current < length(Rcombos@source)){
+    for(i in 1:length(Rcombos@source[[current]])){
+      v = working;
+      v<-append(v,0)
+      for (i in 1:length(Rcombos@source[[current]])) {
+        v[length(v)] = Rcombos@source[[current]][i]
+        # Rcombos@current<-Rcombos@current+as.integer(1)
+        Rcombos <-combinations(current+1,v, Rcombos)
+      }
+    }
+  }else{
+    v = working;
+    v<-append(v,0)
+    for (i in 1:length(Rcombos@source[[current]])) {
+      v[length(v)] = Rcombos@source[[current]][i]
+      Rcombos@combos[[length(Rcombos@combos)+as.integer(1)]]<-v
+      Rcombos@count<-Rcombos@count+as.integer(1)
+    }
+    
+  }
+  return(Rcombos)
+}
+
+
+ht4sa_create_ensemble_set<-function(source = list()){
+  rc<-new("RecursiveCombinations")
+  rc@count<-as.integer(1)
+  rc@current<-as.integer(1)
+  rc@source<-source
+  rc@combos<-list()
+  rcc<-ht4sa_combinations(1,working, rc)
+  return(rcc@combos)
+}
+
 
 
 #run on mpi child
@@ -39,9 +100,8 @@ run_ss_child <- function(testing_options_df,
                          dir_input_files,
                          dir_ss,
                          TESTING = FALSE) {
-  
   #hard code for now
-  exe_path<-"/Users/mattadmin/ht4sa/bin"
+  exe_path <- "/Users/mattadmin/ht4sa/bin"
   print(Sys.info()['sysname'])
   print(begin[mpi.comm.rank()])
   print(end[mpi.comm.rank()])
@@ -54,7 +114,7 @@ run_ss_child <- function(testing_options_df,
     print(i)
     #_____________________________________________________________________________________________________________________________
     # define directory structure
-    model_name = paste0(testing_options_df[i,], collapse = "_")
+    model_name = paste0(testing_options_df[i, ], collapse = "_")
     dir_run = paste0(dir_model, model_name_stem, model_name, "/")
     dir.create(dir_run, recursive = TRUE, showWarnings = FALSE)
     dir_plot = paste0(proj_dir,
@@ -95,7 +155,7 @@ run_ss_child <- function(testing_options_df,
     # change SRR configuration from survival function to BH SRR
     tmp_ctl$SR_function = 3
     tmp_ctl$SR_parms$PR_type = 0
-    tmp_ctl$SR_parms = tmp_ctl$SR_parms[-3, ]
+    tmp_ctl$SR_parms = tmp_ctl$SR_parms[-3,]
     rownames(tmp_ctl$SR_parms)[2] = "SR_BH_steep"
     tmp_ctl$SR_parms$LO[2] = 0.2
     tmp_ctl$SR_parms$HI[2] = 1
@@ -148,18 +208,17 @@ run_ss_child <- function(testing_options_df,
         stop("Error: Bad model settings.")
       }
     } else{
-
       # system(paste0("powershell cd ",dir_run," ; ./ss_win.exe"))
       if (print(Sys.info()['sysname']) == "Darwin") {
         system(paste0("cd ", dir_run))
         setwd(dir_run)
-        system(paste0(exe_path,"/ss_osx"))
+        system(paste0(exe_path, "/ss_osx"))
       } else if (print(Sys.info()['sysname']) == "Linux") {
         system(paste0("cd ", dir_run))
         setwd(dir_run)
-        system(paste0(exe_path,"/ss_linux"))
+        system(paste0(exe_path, "/ss_linux"))
       } else if (print(Sys.info()['sysname']) == "Windows") {
-
+        
       }
     }
   }
@@ -274,7 +333,7 @@ run_ht4sa_ss_local <- function(testing_options_df,
   {
     #_____________________________________________________________________________________________________________________________
     # define directory structure
-    model_name = paste0(testing_options_df[i,], collapse = "_")
+    model_name = paste0(testing_options_df[i, ], collapse = "_")
     dir_run = paste0(dir_model, model_name_stem, model_name, "/")
     dir.create(dir_run, recursive = TRUE, showWarnings = FALSE)
     dir_plot = paste0(proj_dir,
@@ -315,7 +374,7 @@ run_ht4sa_ss_local <- function(testing_options_df,
     # change SRR configuration from survival function to BH SRR
     tmp_ctl$SR_function = 3
     tmp_ctl$SR_parms$PR_type = 0
-    tmp_ctl$SR_parms = tmp_ctl$SR_parms[-3, ]
+    tmp_ctl$SR_parms = tmp_ctl$SR_parms[-3,]
     rownames(tmp_ctl$SR_parms)[2] = "SR_BH_steep"
     tmp_ctl$SR_parms$LO[2] = 0.2
     tmp_ctl$SR_parms$HI[2] = 1
