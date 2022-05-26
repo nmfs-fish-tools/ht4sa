@@ -4,102 +4,7 @@
 library(ht4sa)
 library(Rmpi)
 library(r4ss)
-library(pointr)
-library(tidyverse)
 
-newPointer=function(inputValue){ 
-  object=new.env(parent=globalenv()) 
-  object$value=inputValue 
-  class(object)='pointer'
-  
-  return(object) 
-} 
-
-updatePointerValue=function (object, ...) { # create S3 generic 
-  UseMethod("updatePointerValue")  
-}  
-
-install.packages("pointr")
-
-#source("../R/ht4sa.R")
-setClass("EnsembleUnit", 
-         representation(
-           element = "character",
-           indices = "vector", #column-row
-           values="vector"))
-
-set_ensemble_element<-function(input = list(), 
-                               element = EnsembleUnit,
-                               index){
-  
-  if(length(element@indices)== 1){
-    input[[element@element]][[element@indices[1]]]<-element@values[index]
-  }else if(length(element@indices)== 2){
-    input[[element@element]][[element@indices[1]]][[element@indices[2]]]<-element@values[index]
-    }
-  
-  return(input)
-}
-
-set_ensemble_element<-function(input = list(), 
-                               element = EnsembleUnit,
-                               value = numeric){
-  
-  if(length(element@indices)== 1){
-    input[[element@element]][[element@indices[1]]]<-value
-  }else if(length(element@indices)== 2){
-    input[[element@element]][[element@indices[1]]][[element@indices[2]]]<-value
-  }
-  
-  return(input)
-}
-
-build_parameter_sets<-function(count = as.integer(), 
-                               current = as.integer(), 
-                               working = vector,
-                               source,
-                               combos){
-
-
-  if (current == 1) {
-    for (i in 1:length(source[[1]])) {
-      v=c(0)
-      v[1] = source[[1]][i]
-      combos<-build_parameter_sets(count, current + 1, v, source, combos)
-    }
-  } else if (current < length(source)) {
-    v = working;
-    append(v,0)
-    for (i in 1:length(source[[current]])) {
-      v[length(v)] = source[[current]][i]
-      combos <-build_parameter_sets(count, current + 1, v, source, combos)
-    }
-  } else {
-    v = working;
-    append(v,0)
-    for (i in 1:length(source[[current]])) {
-      v[length(v)] = source[[current]][i]
-      print(source[current][i])
-      combos[[length(combos)+1]]<-v
-      count<-count+1
-    }
-    
-  }
-  return(combos)
-}
-
-source<-list(c(1,2,3), c(4,5,6))
-source[[length(source)+1]]<-c(0.1,.3)
-source
-combos<-list()
-working<-rep(0,2)
-working
-cc<-build_parameter_sets(1,1,working,source,combos)
-print(cc)
-class(combos)
-
-c<-expand.grid(combos)#choose(combos,2)
-print(c)
 ensemble_units<-list()
 
 e<-new("EnsembleUnit", 
@@ -117,6 +22,7 @@ e2<-new("EnsembleUnit",
        indices = c(1,4),
        values=c(1.1,2.0,3.4))
 ensemble_units<-append(ensemble_units, e2)
+
 print(ensemble_units)
 #_____________________________________________________________________________________________________________________________
 # set directory paths

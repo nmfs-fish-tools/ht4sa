@@ -86,6 +86,33 @@ ht4sa_create_ensemble_set<-function(source = list()){
 }
 
 
+set_ensemble_element<-function(input = list(), 
+                               element = EnsembleUnit,
+                               index){
+  
+  if(length(element@indices)== 1){
+    input[[element@element]][[element@indices[1]]]<-element@values[index]
+  }else if(length(element@indices)== 2){
+    input[[element@element]][[element@indices[1]]][[element@indices[2]]]<-element@values[index]
+  }
+  
+  return(input)
+}
+
+set_ensemble_element<-function(input = list(), 
+                               element = EnsembleUnit,
+                               value = numeric){
+  
+  if(length(element@indices)== 1){
+    input[[element@element]][[element@indices[1]]]<-value
+  }else if(length(element@indices)== 2){
+    input[[element@element]][[element@indices[1]]][[element@indices[2]]]<-value
+  }
+  
+  return(input)
+}
+
+
 
 #run on mpi child
 #' @export
