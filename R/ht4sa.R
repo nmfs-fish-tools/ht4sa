@@ -25,6 +25,26 @@ if (!is.loaded("mpi_initialize")) {
   }
 }
 
+setClass("EnsembleUnit", 
+         representation(
+           element = "character",
+           indices = "vector", #column-row
+           values="vector"))
+
+set_ensemble_element<-function(input = list(), 
+                               element = EnsembleUnit,
+                               index){
+  
+  if(length(element@indices)== 1){
+    input[[element@element]][[element@indices[1]]]<-element@values[index]
+  }else if(length(element@indices)== 2){
+    input[[element@element]][[element@indices[1]]][[element@indices[2]]]<-element@values[index]
+  }
+  
+  return(input)
+}
+
+
 #
 #helper class for recusively creating
 #parameter set.
@@ -49,7 +69,7 @@ ht4sa_combinations<-function(current = as.integer(),working = vector(), Rcombos 
     for(i in 1:length(Rcombos@source[[1]])){
       v=c()
       v<- append(v, Rcombos@source[[1]][i])
-      Rcombos<-combinations(current+1,v,Rcombos)
+      Rcombos<-ht4sa_combinations(current+1,v,Rcombos)
     }
   } else if(current < length(Rcombos@source)){
     for(i in 1:length(Rcombos@source[[current]])){
@@ -58,7 +78,7 @@ ht4sa_combinations<-function(current = as.integer(),working = vector(), Rcombos 
       for (i in 1:length(Rcombos@source[[current]])) {
         v[length(v)] = Rcombos@source[[current]][i]
         # Rcombos@current<-Rcombos@current+as.integer(1)
-        Rcombos <-combinations(current+1,v, Rcombos)
+        Rcombos <-ht4sa_combinations(current+1,v, Rcombos)
       }
     }
   }else{
@@ -82,6 +102,7 @@ ht4sa_create_ensemble_set<-function(source = list()){
   rc@source<-source
   rc@combos<-list()
   rcc<-ht4sa_combinations(1,working, rc)
+  
   return(rcc@combos)
 }
 

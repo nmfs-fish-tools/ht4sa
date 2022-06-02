@@ -23,38 +23,51 @@ tmp_ctl = SS_readctl(
   use_datlist = TRUE,
   datlist = paste0(dir_ss, "data.ss")
 )
-print(tmp_ctl)
 
 
+#create a list S4 ensemble units
 ensemble_units<-list()
-
-e<-new("EnsembleUnit", 
+e1<-new("EnsembleUnit", 
        element = "SR_parms", 
-       indices = c(2,4),
+       indices = c(3,5),
        values=c(1.1,2.0,3.4))
 
-
-
-ensemble_units<-append(ensemble_units, e)
-
-print(ensemble_units)
+ensemble_units<-append(ensemble_units, e1)
 
 e2<-new("EnsembleUnit", 
-        element = "SR_parms", 
-        indices = c(1,4),
-        values=c(1.1,2.0,3.4))
+        element = "size_selex_parms", 
+        indices = c(3,2),
+        values=c(1.2,2.2,9.4))
 
 ensemble_units<-append(ensemble_units, e2)
 
-print(ensemble_units)
+ensemble_values<-list()
+for(i in 1:length(ensemble_units)){
+  print(ensemble_units[[i]]@values)
+  ensemble_values[[length(ensemble_values)+1]]<-ensemble_units[[i]]@values
+}
+
+#create the parameter sets
+parameter_sets<-ht4sa_create_ensemble_set(ensemble_values)
+
+#print out the parameter sets
+for(i in 1:length(parameter_sets)){
+  cat(parameter_sets[[i]])
+  cat("\n")
+}
+
 
 tmp_ctl[["SR_parms"]][[2]][[4]]
+tmp_ctl[[e1@element]][[e1@indices[1]]][[e@indices[2]]]
+tmp_ctl[[e2@element]][[e2@indices[1]]][[e@indices[2]]]
+tmp_ctl<-set_ensemble_element(tmp_ctl, e, 1)
 tmp_ctl[[e@element]][[e@indices[1]]][[e@indices[2]]]
-
+tmp_ctl[[e2@element]][[e2@indices[1]]]
 # set-up testing options
     testing_options_df = expand.grid(steepness=c(0.45,0.6,0.75),
                                      sigmaR=c(0.3,0.4,0.5),
                                      stringsAsFactors=FALSE)
+
 
 #run cases in parallel
 b<- run_ht4sa_ss_MPI(testing_options_df,
