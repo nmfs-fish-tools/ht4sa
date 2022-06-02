@@ -1,4 +1,4 @@
-#useDynLib(ht4sa, .registration=TRUE)
+useDynLib(ht4sa, .registration=TRUE)
 exportPattern("^[[:alpha:]]+")
 export(run_ss_child)
 export(run_ht4sa_ss_MPI)
