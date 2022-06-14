@@ -78,3 +78,15 @@ for(i in 1:length(selectivity_models)){
 
 cat("Combinations: \n")
 print(models)
+
+for(i in 1:nrow(models)){
+  cat("model:\n")
+  cat(recruitment_models[[models$recruitment[[ i]]]]$name)
+  cat("(")
+  cat(recruitment_models[[models$recruitment[[ i]]]]$get_id())
+  cat(") -  ")
+  cat( selectivity_models[[models$selectivity[[i]]]]$name)
+  cat("(")
+  cat(selectivity_models[[models$selectivity[[ i]]]]$get_id())
+  cat(")\n")
+}
