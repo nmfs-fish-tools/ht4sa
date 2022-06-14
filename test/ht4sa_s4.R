@@ -7,7 +7,7 @@ ht4sa <- Rcpp::Module("ht4sa", PACKAGE = "ht4sa")
 #create the ensemble object
 ensemble <- new(ht4sa$ht4sa_ensemble)
 
-#create a interface object
+#create an interface object
 beverton_holt_1 <- new(ht4sa$beverton_holt)
 #add it to the ensemble
 ensemble$add_recruitment_unit(beverton_holt_1$get_id())
@@ -93,11 +93,17 @@ cat("Combinations: \n")
 print(models)
 
 for (i in 1:nrow(models)) {
+  
   cat("\nModel ")
   cat(i)
   cat(" of ")
   cat(nrow(models))
   cat(":\n")
+  path<-paste(as.character(as.vector(models[i,])), collapse = "_")
+  cat("Path to input: /User/matthew/ht4sa/ss/input/")
+  cat(path)
+  cat("\n")
+ 
   if ("recruitment" %in% colnames(models))
   {
     cat(ht4sa_recruitment_models[[models$recruitment[[i]]]]$name)
