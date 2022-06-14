@@ -1,6 +1,6 @@
 
 #include <vector>
-
+#include <map>
 
 #define RCPP_NO_SUGAR
 #include <Rcpp.h>
@@ -27,6 +27,197 @@ public:
     parameter() {
         this->value = 0;
     }
+};
+
+enum ModelCategory {
+    RECRUITMENT = 0,
+    SELECTIVITY,
+    GROWTH
+};
+
+class model_base {
+public:
+    static std::vector<model_base* > model_objects;
+};
+std::vector<model_base* > model_base::model_objects;
+
+class recruitment_base : public model_base {
+public:
+    static std::map<uint32_t, recruitment_base*> recruitment_objects;
+    static uint32_t id_g;
+    uint32_t id;
+
+    recruitment_base() {
+        this->id = recruitment_base::id_g++;
+        model_base::model_objects.push_back(this);
+    }
+
+};
+std::map<uint32_t, recruitment_base*> recruitment_base::recruitment_objects;
+uint32_t recruitment_base::id_g = 1;
+
+class ricker : public recruitment_base {
+public:
+    uint32_t category = RECRUITMENT;
+
+    uint32_t ss_id = 2;
+    parameter ln_R0;
+    parameter h;
+    std::string name = "ricker";
+
+    ricker() : recruitment_base() {
+        recruitment_base::recruitment_objects[this->id] = this;
+    }
+
+    uint32_t get_id() {
+        return this->id;
+    }
+};
+
+class beverton_holt : public recruitment_base {
+public:
+    uint32_t category = RECRUITMENT;
+    uint32_t ss_id = 3;
+    parameter ln_R0;
+    parameter h;
+    std::string name = "beverton_holt";
+
+    beverton_holt() : recruitment_base() {
+        recruitment_base::recruitment_objects[this->id] = this;
+    }
+
+    uint32_t get_id() {
+        return this->id;
+    }
+};
+
+class hockey_stick : public recruitment_base {
+public:
+    uint32_t category = RECRUITMENT;
+    uint32_t ss_id = 5;
+    parameter ln_R0;
+    parameter h;
+    parameter Rmin;
+    std::string name = "hockey_stick";
+
+    hockey_stick() : recruitment_base() {
+        recruitment_base::recruitment_objects[this->id] = this;
+    }
+
+    uint32_t get_id() {
+        return this->id;
+    }
+};
+
+class selectivity_base : public model_base {
+public:
+    uint32_t category = SELECTIVITY;
+    static std::map<uint32_t, selectivity_base*> selectivity_objects;
+    static uint32_t id_g;
+    uint32_t id;
+
+    selectivity_base() {
+        this->id = selectivity_base::id_g++;
+        model_base::model_objects.push_back(this);
+    }
+};
+std::map<uint32_t, selectivity_base*> selectivity_base::selectivity_objects;
+uint32_t selectivity_base::id_g = 1;
+
+class constant_selectivity : public selectivity_base {
+public:
+    uint32_t category = SELECTIVITY;
+    uint32_t ss_id = 0;
+    std::string name = "constant_selectivity";
+
+    constant_selectivity() : selectivity_base() {
+        selectivity_base::selectivity_objects[this->id] = this;
+    }
+
+    uint32_t get_id() {
+        return this->id;
+    }
+
+};
+
+class logistic_selectivity : public selectivity_base {
+public:
+    uint32_t category = SELECTIVITY;
+    uint32_t ss_id = 1;
+    parameter slope;
+    parameter median;
+    std::string name = "logistic_selectivity";
+
+    logistic_selectivity() : selectivity_base() {
+        selectivity_base::selectivity_objects[this->id] = this;
+    }
+
+    uint32_t get_id() {
+        return this->id;
+    }
+
+};
+
+class double_logistic_selectivity : public selectivity_base {
+public:
+    uint32_t category = SELECTIVITY;
+    uint32_t ss_id = 8;
+    parameter asc_slope;
+    parameter asc_median;
+    parameter desc_slope;
+    parameter desc_median;
+    std::string name = "double_logistic_selectivity";
+
+    double_logistic_selectivity() : selectivity_base() {
+        selectivity_base::selectivity_objects[this->id] = this;
+    }
+
+    uint32_t get_id() {
+        return this->id;
+    }
+
+};
+
+class double_normal_selectivity : public selectivity_base {
+public:
+    uint32_t category = SELECTIVITY;
+    uint32_t ss_id = 22;
+    std::string name = "double_normal_selectivity";
+
+    double_normal_selectivity() : selectivity_base() {
+        selectivity_base::selectivity_objects[this->id] = this;
+    }
+
+    uint32_t get_id() {
+        return this->id;
+    }
+
+};
+
+class ht4sa_ensemble {
+public:
+
+    Rcpp::IntegerVector recruitment_units;
+    Rcpp::IntegerVector selectivity_units;
+
+    void add_recruitment_unit(uint32_t id) {
+        recruitment_units.push_back(id);
+    }
+
+    void add_selectivity_unit(uint32_t id) {
+        selectivity_units.push_back(id);
+    }
+
+    Rcpp::IntegerVector get_recruitment_units() {
+        return this->recruitment_units;
+    }
+
+    Rcpp::IntegerVector get_selectivity_units() {
+        return this->selectivity_units;
+    }
+
+
+
 };
 
 class ht4sa_ss_recr_dist_pattern {
@@ -68,11 +259,11 @@ public:
     double Npopbins;
     double Nfleets;
     double Do_AgeKey;
-    //fleetnames;
-    //sourcefile;
-    //type;
-    //ReadVersion;
-    //eof;
+    Rcpp::StringVector fleetnames;
+    std::string sourcefile;
+    std::string type;
+    std::string ReadVersion;
+    bool eof;
     double EmpiricalWAA;
     double N_GP;
     double N_platoon;
@@ -80,7 +271,7 @@ public:
     double recr_global_area;
     double recr_dist_read;
     double recr_dist_inx;
-    //recr_dist_pattern;
+    Rcpp::DataFrame recr_dist_pattern;
     double N_Block_Designs;
     //blocks_per_pattern;
     //Block_Design;
@@ -208,7 +399,77 @@ RCPP_MODULE(ht4sa) {
             .field("max", &parameter::max)
             .field("is_random_effect", &parameter::is_random_effect)
             .field("estimated", &parameter::estimated);
-    
+
+    Rcpp::class_<ricker>("ricker")
+            .constructor()
+            .field("category", &ricker::category)
+            .field("ss_id", &ricker::ss_id)
+            .field("name", &ricker::name)
+            .field("ln_R0", &ricker::ln_R0)
+            .field("h", &ricker::h)
+            .method("get_id", &ricker::get_id);
+
+    Rcpp::class_<beverton_holt>("beverton_holt")
+            .constructor()
+            .field("category", &beverton_holt::category)
+            .field("ss_id", &beverton_holt::ss_id)
+            .field("name", &beverton_holt::name)
+            .field("ln_R0", &beverton_holt::ln_R0)
+            .field("h", &beverton_holt::h)
+            .method("get_id", &beverton_holt::get_id);
+
+    Rcpp::class_<hockey_stick>("hockey_stick")
+            .constructor()
+            .field("category", &hockey_stick::category)
+            .field("ss_id", &hockey_stick::ss_id)
+            .field("name", &hockey_stick::name)
+            .field("ln_R0", &hockey_stick::ln_R0)
+            .field("h", &hockey_stick::h)
+            .field("Rmin", &hockey_stick::Rmin)
+            .method("get_id", &hockey_stick::get_id);
+
+    Rcpp::class_<constant_selectivity>("constant_selectivity")
+            .constructor()
+            .field("category", &constant_selectivity::category)
+            .field("ss_id", &constant_selectivity::ss_id)
+            .field("name", &constant_selectivity::name)
+            .method("get_id", &constant_selectivity::get_id);
+
+    Rcpp::class_<logistic_selectivity>("logistic_selectivity")
+            .constructor()
+            .field("category", &logistic_selectivity::category)
+            .field("ss_id", &logistic_selectivity::ss_id)
+            .field("name", &logistic_selectivity::name)
+            .field("median", &logistic_selectivity::median)
+            .field("slope", &logistic_selectivity::slope)
+            .method("get_id", &logistic_selectivity::get_id);
+
+    Rcpp::class_<double_logistic_selectivity>("double_logistic_selectivity")
+            .constructor()
+            .field("category", &double_logistic_selectivity::category)
+            .field("ss_id", &double_logistic_selectivity::ss_id)
+            .field("name", &double_logistic_selectivity::name)
+            .field("asc_median", &double_logistic_selectivity::asc_median)
+            .field("asc_slope", &double_logistic_selectivity::asc_slope)
+            .field("desc_median", &double_logistic_selectivity::desc_median)
+            .field("desc_slope", &double_logistic_selectivity::desc_slope)
+            .method("get_id", &double_logistic_selectivity::get_id);
+
+    Rcpp::class_<double_normal_selectivity>("double_normal_selectivity")
+            .constructor()
+            .field("category", &double_normal_selectivity::category)
+            .field("ss_id", &double_normal_selectivity::ss_id)
+            .field("name", &double_normal_selectivity::name)
+            .method("get_id", &double_normal_selectivity::get_id);
+
+    Rcpp::class_<ht4sa_ensemble>("ht4sa_ensemble")
+            .constructor()
+            .method("add_recruitment_unit", &ht4sa_ensemble::add_recruitment_unit)
+            .method("add_selectivity_unit", &ht4sa_ensemble::add_selectivity_unit)
+            .method("get_recruitment_units", &ht4sa_ensemble::get_recruitment_units)
+            .method("get_selectivity_units", &ht4sa_ensemble::get_selectivity_units);
+
+
     Rcpp::class_<ht4sa_ss_control>("ht4sa_ss_control")
             .constructor()
             //warnings;
@@ -219,11 +480,11 @@ RCPP_MODULE(ht4sa) {
             .field("Npopbins", &ht4sa_ss_control::Npopbins)
             .field("Nfleets", &ht4sa_ss_control::Nfleets)
             .field("Do_AgeKey", &ht4sa_ss_control::Do_AgeKey)
-            //fleetnames;
-            //sourcefile;
-            //type;
-            //ReadVersion;
-            //eof;
+            .field("fleetnames", &ht4sa_ss_control::fleetnames)
+            .field("sourcefile", &ht4sa_ss_control::sourcefile)
+            .field("type", &ht4sa_ss_control::type)
+            .field("ReadVersion", &ht4sa_ss_control::ReadVersion)
+            .field("eof", &ht4sa_ss_control::eof)
             .field("EmpiricalWAA", &ht4sa_ss_control::EmpiricalWAA)
             .field("N_GP", &ht4sa_ss_control::N_GP)
             .field("N_platoon", &ht4sa_ss_control::N_platoon)
@@ -231,7 +492,7 @@ RCPP_MODULE(ht4sa) {
             .field("recr_global_area", &ht4sa_ss_control::recr_global_area)
             .field("recr_dist_read", &ht4sa_ss_control::recr_dist_read)
             .field("recr_dist_inx", &ht4sa_ss_control::recr_dist_inx)
-            //recr_dist_pattern;
+            .field("recr_dist_pattern", &ht4sa_ss_control::recr_dist_pattern)
             .field("N_Block_Designs", &ht4sa_ss_control::N_Block_Designs)
             //blocks_per_pattern;
             //Block_Design;
@@ -301,10 +562,10 @@ RCPP_MODULE(ht4sa) {
             .field("more_stddev_reporting", &ht4sa_ss_control::more_stddev_reporting);
 }
 
-    //    Rcpp::class_<ht4sa_ss_recr_dist_pattern>("ht4sa_ss_recr_dist_pattern")
-    //            .constructor()
-    //            .field("GPattern", &ht4sa_ss_recr_dist_pattern::GPattern)
-    //            .field("month", &ht4sa_ss_recr_dist_pattern::month)
-    //            .field("area", &ht4sa_ss_recr_dist_pattern::area)
-    //            .field("age", &ht4sa_ss_recr_dist_pattern::age);
-    //}
+//    Rcpp::class_<ht4sa_ss_recr_dist_pattern>("ht4sa_ss_recr_dist_pattern")
+//            .constructor()
+//            .field("GPattern", &ht4sa_ss_recr_dist_pattern::GPattern)
+//            .field("month", &ht4sa_ss_recr_dist_pattern::month)
+//            .field("area", &ht4sa_ss_recr_dist_pattern::area)
+//            .field("age", &ht4sa_ss_recr_dist_pattern::age);
+//}
