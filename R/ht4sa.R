@@ -7,6 +7,12 @@
 library(r4ss)
 library(Rmpi)
 
+#model type enumerations
+HT4SA_RECRUITMENT<-0
+HT4SA_SELECTIVITY<-1
+HT4SA_GROWTH<-2
+
+#s4 model lists
 ht4sa_recruitment_models<-list()
 ht4sa_selectivity_models<-list()
 
