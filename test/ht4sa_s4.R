@@ -55,12 +55,20 @@ ensemble$add_selectivity_unit(double_normal_selectivity_1$get_id())
 ht4sa_selectivity_models[[double_normal_selectivity_1$get_id()]] <-
   double_normal_selectivity_1
 
+von_bertalanffy<-new(ht4sa$von_bertalanffy)
+ensemble$add_growth_unit(von_bertalanffy$get_id())
+ht4sa_growth_models[[von_bertalanffy$get_id()]] <-von_bertalanffy
+
+schnute<-new(ht4sa$schnute)
+ensemble$add_growth_unit(schnute$get_id())
+ht4sa_growth_models[[schnute$get_id()]] <-schnute
 
 #extract ids and create combinations
 models <- expand.grid(
   recruitment =
     ensemble$get_recruitment_units(),
-  selectivity = ensemble$get_selectivity_units()
+  selectivity = ensemble$get_selectivity_units(),
+  growth = ensemble$get_growth_units()
 )
 
 
@@ -93,7 +101,8 @@ cat("Combinations: \n")
 print(models)
 
 for (i in 1:nrow(models)) {
-  
+  names<-colnames(models) 
+
   cat("\nModel ")
   cat(i)
   cat(" of ")
@@ -109,7 +118,7 @@ for (i in 1:nrow(models)) {
     cat(ht4sa_recruitment_models[[models$recruitment[[i]]]]$name)
     cat("(id = ")
     cat(ht4sa_recruitment_models[[models$recruitment[[i]]]]$get_id())
-    cat(") -  ")
+    cat(")\n")
   }
   
   if ("selectivity" %in% colnames(models))
@@ -117,6 +126,14 @@ for (i in 1:nrow(models)) {
     cat(ht4sa_selectivity_models[[models$selectivity[[i]]]]$name)
     cat("(id = ")
     cat(ht4sa_selectivity_models[[models$selectivity[[i]]]]$get_id())
+    cat(")\n")
+  }
+  
+  if ("growth" %in% colnames(models))
+  {
+    cat(ht4sa_growth_models[[models$growth[[i]]]]$name)
+    cat("(id = ")
+    cat(ht4sa_growth_models[[models$growth[[i]]]]$get_id())
     cat(")\n")
   }
 }

@@ -15,6 +15,7 @@ HT4SA_GROWTH<-2
 #s4 model lists
 ht4sa_recruitment_models<-list()
 ht4sa_selectivity_models<-list()
+ht4sa_growth_models<-list()
 
 # Load the R MPI package if it is not already loaded.
 if (!is.loaded("mpi_initialize")) {

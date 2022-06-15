@@ -194,11 +194,59 @@ public:
 
 };
 
+class growth_base : public model_base {
+public:
+    uint32_t category = GROWTH;
+    static std::map<uint32_t, growth_base*> growth_objects;
+    static uint32_t id_g;
+    uint32_t id;
+
+    growth_base() {
+        this->id = growth_base::id_g++;
+        model_base::model_objects.push_back(this);
+    }
+};
+std::map<uint32_t, growth_base*> growth_base::growth_objects;
+uint32_t growth_base::id_g = 1;
+
+class von_bertalanffy : public growth_base {
+public:
+    uint32_t category = GROWTH;
+    uint32_t ss_id = 1;
+    std::string name = "von_bertalanffy";
+
+    von_bertalanffy() : growth_base() {
+        growth_base::growth_objects[this->id] = this;
+    }
+
+    uint32_t get_id() {
+        return this->id;
+    }
+
+};
+
+class schnute : public growth_base {
+public:
+    uint32_t category = GROWTH;
+    uint32_t ss_id = 2;
+    std::string name = "schnute";
+
+    schnute() : growth_base() {
+        growth_base::growth_objects[this->id] = this;
+    }
+
+    uint32_t get_id() {
+        return this->id;
+    }
+
+};
+
 class ht4sa_ensemble {
 public:
 
     Rcpp::IntegerVector recruitment_units;
     Rcpp::IntegerVector selectivity_units;
+    Rcpp::IntegerVector growth_units;
 
     void add_recruitment_unit(uint32_t id) {
         recruitment_units.push_back(id);
@@ -208,6 +256,10 @@ public:
         selectivity_units.push_back(id);
     }
 
+    void add_growth_unit(uint32_t id) {
+        growth_units.push_back(id);
+    }
+
     Rcpp::IntegerVector get_recruitment_units() {
         return this->recruitment_units;
     }
@@ -215,6 +267,11 @@ public:
     Rcpp::IntegerVector get_selectivity_units() {
         return this->selectivity_units;
     }
+
+    Rcpp::IntegerVector get_growth_units() {
+        return this->growth_units;
+    }
+
 
 
 
@@ -462,12 +519,28 @@ RCPP_MODULE(ht4sa) {
             .field("name", &double_normal_selectivity::name)
             .method("get_id", &double_normal_selectivity::get_id);
 
+    Rcpp::class_<von_bertalanffy>("von_bertalanffy")
+            .constructor()
+            .field("category", &von_bertalanffy::category)
+            .field("ss_id", &von_bertalanffy::ss_id)
+            .field("name", &von_bertalanffy::name)
+            .method("get_id", &von_bertalanffy::get_id);
+
+    Rcpp::class_<schnute>("schnute")
+            .constructor()
+            .field("category", &schnute::category)
+            .field("ss_id", &schnute::ss_id)
+            .field("name", &schnute::name)
+            .method("get_id", &schnute::get_id);
+
     Rcpp::class_<ht4sa_ensemble>("ht4sa_ensemble")
             .constructor()
             .method("add_recruitment_unit", &ht4sa_ensemble::add_recruitment_unit)
             .method("add_selectivity_unit", &ht4sa_ensemble::add_selectivity_unit)
+            .method("add_growth_unit", &ht4sa_ensemble::add_growth_unit)
             .method("get_recruitment_units", &ht4sa_ensemble::get_recruitment_units)
-            .method("get_selectivity_units", &ht4sa_ensemble::get_selectivity_units);
+            .method("get_selectivity_units", &ht4sa_ensemble::get_selectivity_units)
+            .method("get_growth_units", &ht4sa_ensemble::get_growth_units);
 
 
     Rcpp::class_<ht4sa_ss_control>("ht4sa_ss_control")
