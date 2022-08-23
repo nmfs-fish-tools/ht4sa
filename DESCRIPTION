@@ -1,11 +1,30 @@
 Package: ht4sa
-Type: Package
-Title: What the Package Does in One 'Title Case' Line
-Version: 1.0
-Date: 2022-03-11
-Author: Your Name
-Maintainer: Your Name <your@email.com>
+Title: Run Stock Assessment Ensembles using High Throughput
+Version: 1.0.0
+Authors@R: c(person(give = "Matthew", family = "Supernaw",
+                 email = "matthew.supernaw@noaa.gov", 
+                 role = c("aut", "cre")),
+             person("Megumi", "Oshima", role = "aut"),
+             person("Nicholas", "Ducharme-Barth", role = "aut"),
+             person("Matthew", "Vincent", role = "aut"),
+             person(c("Kathryn", "L."), "Doering", role = "aut",
+               comment = c(ORCID = "0000-0002-0396-7044")),
+     )
 Description: High throughput computing for stock assessment.
 License: GPL (>= 2)
-Imports: devtools, r4ss, Rmpi, Rcpp
+Imports: 
+    devtools,
+    r4ss,
+    Rmpi,
+    Rcpp
 LinkingTo: Rcpp
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.0.9000
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)  
+Config/testthat/edition: 3
+VignetteBuilder: knitr
