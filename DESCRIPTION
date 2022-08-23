@@ -8,7 +8,7 @@ Authors@R: c(person(give = "Matthew", family = "Supernaw",
              person("Nicholas", "Ducharme-Barth", role = "aut"),
              person("Matthew", "Vincent", role = "aut"),
              person(c("Kathryn", "L."), "Doering", role = "aut",
-               comment = c(ORCID = "0000-0002-0396-7044")),
+               comment = c(ORCID = "0000-0002-0396-7044"))
      )
 Description: High throughput computing for stock assessment.
 License: GPL (>= 2)
@@ -21,7 +21,7 @@ LinkingTo: Rcpp
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0.9000
+RoxygenNote: 7.2.1
 Suggests: 
     knitr,
     rmarkdown,
