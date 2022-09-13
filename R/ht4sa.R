@@ -17,6 +17,35 @@ ht4sa_recruitment_models<-list()
 ht4sa_selectivity_models<-list()
 ht4sa_growth_models<-list()
 
+say2<-function(){
+    print(length(ht4sa_recruitment_models))
+}
+print("loading ht4sa....")
+ht4sa_create_models<-function(){
+    e<-globalenv()
+    models<-list(length(e$ht4sa_recruitment_models))
+    recruitment_ids<-c(rep(0,length(e$ht4sa_recruitment_models)))
+    for(i in 1:length(e$ht4sa_recruitment_models)){
+        recruitment_ids[i]<-e$ht4sa_recruitment_models[[i]]$get_id()
+    }
+    selectivity_ids<-c(rep(0,length(e$ht4sa_selectivity_models)))
+    for(i in 1:length(e$ht4sa_selectivity_models)){
+        selectivity_ids[i]<-e$ht4sa_selectivity_models[[i]]$get_id()
+    }
+    growth_ids<-c(rep(0,length(e$ht4sa_growth_models)))
+    for(i in 1:length(e$ht4sa_growth_models)){
+        growth_ids[i]<-e$ht4sa_growth_models[[i]]$get_id()
+    }
+    
+    models <- expand.grid(
+      recruitment =
+      recruitment_ids,
+      selectivity = selectivity_ids,
+      growth = growth_ids
+    )
+    
+    return (models)
+}
 # Load the R MPI package if it is not already loaded.
 if (!is.loaded("mpi_initialize")) {
   library("Rmpi")
@@ -64,6 +93,8 @@ setClass("RecursiveCombinations",
            source = "list",
            combos = "list"))
 
+
+ht4sa_ensemble_units<-list()
 
 
 #
