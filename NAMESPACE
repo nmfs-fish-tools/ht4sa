@@ -1,5 +1,6 @@
 useDynLib(ht4sa, .registration=TRUE)
 exportPattern("^[[:alpha:]]+")
+export(ht4sa_create_models)
 export(run_ss_child)
 export(run_ht4sa_ss_MPI)
 export(run_ht4sa_ss_local)

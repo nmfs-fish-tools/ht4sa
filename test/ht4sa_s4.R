@@ -9,67 +9,53 @@ ensemble <- new(ht4sa$ht4sa_ensemble)
 
 #create an interface object
 beverton_holt_1 <- new(ht4sa$beverton_holt)
-#add it to the ensemble
-ensemble$add_recruitment_unit(beverton_holt_1$get_id())
 #add it to ht4sa recruitment list
 ht4sa_recruitment_models[[beverton_holt_1$get_id()]] <-
   beverton_holt_1
 
 
 beverton_holt_2 <- new(ht4sa$beverton_holt)
-ensemble$add_recruitment_unit(beverton_holt_2$get_id())
 ht4sa_recruitment_models[[beverton_holt_2$get_id()]] <-
   beverton_holt_2
 
 beverton_holt_3 <- new(ht4sa$beverton_holt)
-ensemble$add_recruitment_unit(beverton_holt_3$get_id())
 ht4sa_recruitment_models[[beverton_holt_3$get_id()]] <-
   beverton_holt_3
 
 ricker_1 <- new(ht4sa$ricker)
-ensemble$add_recruitment_unit(ricker_1$get_id())
 ht4sa_recruitment_models[[ricker_1$get_id()]] <- ricker_1
 
 ricker_2 <- new(ht4sa$ricker)
-ensemble$add_recruitment_unit(ricker_2$get_id())
 ht4sa_recruitment_models[[ricker_2$get_id()]] <- ricker_2
 
 logistic_selectivity_1 <- new(ht4sa$logistic_selectivity)
-ensemble$add_selectivity_unit(logistic_selectivity_1$get_id())
 ht4sa_selectivity_models[[logistic_selectivity_1$get_id()]] <-
   logistic_selectivity_1
 
 logistic_selectivity_2 <- new(ht4sa$logistic_selectivity)
-ensemble$add_selectivity_unit(logistic_selectivity_2$get_id())
 ht4sa_selectivity_models[[logistic_selectivity_2$get_id()]] <-
   logistic_selectivity_2
 
 double_logistic_selectivity_1 <-
   new(ht4sa$double_logistic_selectivity)
-ensemble$add_selectivity_unit(double_logistic_selectivity_1$get_id())
 ht4sa_selectivity_models[[double_logistic_selectivity_1$get_id()]] <-
   double_logistic_selectivity_1
 
 double_normal_selectivity_1 <- new(ht4sa$double_normal_selectivity)
-ensemble$add_selectivity_unit(double_normal_selectivity_1$get_id())
 ht4sa_selectivity_models[[double_normal_selectivity_1$get_id()]] <-
   double_normal_selectivity_1
 
 von_bertalanffy<-new(ht4sa$von_bertalanffy)
-ensemble$add_growth_unit(von_bertalanffy$get_id())
 ht4sa_growth_models[[von_bertalanffy$get_id()]] <-von_bertalanffy
 
 schnute<-new(ht4sa$schnute)
-ensemble$add_growth_unit(schnute$get_id())
 ht4sa_growth_models[[schnute$get_id()]] <-schnute
 
+print(length(ht4sa_recruitment_models))
 #extract ids and create combinations
-models <- expand.grid(
-  recruitment =
-    ensemble$get_recruitment_units(),
-  selectivity = ensemble$get_selectivity_units(),
-  growth = ensemble$get_growth_units()
-)
+models <- ht4sa_create_models()
+
+
 
 
 cat("recruitment models\n")

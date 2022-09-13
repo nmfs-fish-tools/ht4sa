@@ -19,10 +19,19 @@ public:
     estimated(estimated) {
 
     }
+    
+    parameter(const parameter& other) :
+    value(other.value), min(other.min), max(other.max), 
+    is_random_effect(other.is_random_effect), 
+    estimated(other.estimated) {
+    }
+
 
     parameter(double value) {
         this->value = value;
     }
+    
+    
 
     parameter() {
         this->value = 0;
@@ -85,6 +94,12 @@ public:
     beverton_holt() : recruitment_base() {
         recruitment_base::recruitment_objects[this->id] = this;
     }
+    
+    beverton_holt(const beverton_holt& other) :
+    category(other.category), ss_id(other.ss_id), 
+    ln_R0(other.ln_R0), h(other.h), name(other.name) {
+    }
+
 
     uint32_t get_id() {
         return this->id;
@@ -271,9 +286,6 @@ public:
     Rcpp::IntegerVector get_growth_units() {
         return this->growth_units;
     }
-
-
-
 
 };
 
