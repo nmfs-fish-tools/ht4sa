@@ -4,47 +4,60 @@
 
 
 
+
 library(r4ss)
 library(Rmpi)
 
 #model type enumerations
-HT4SA_RECRUITMENT<-0
-HT4SA_SELECTIVITY<-1
-HT4SA_GROWTH<-2
+HT4SA_RECRUITMENT <- 0
+HT4SA_SELECTIVITY <- 1
+HT4SA_GROWTH <- 2
 
 #s4 model lists
-ht4sa_recruitment_models<-list()
-ht4sa_selectivity_models<-list()
-ht4sa_growth_models<-list()
+ht4sa_recruitment_models <- list()
+ht4sa_selectivity_models <- list()
+ht4sa_growth_models <- list()
 
-say2<-function(){
-    print(length(ht4sa_recruitment_models))
+say2 <- function() {
+  print(length(ht4sa_recruitment_models))
 }
 print("loading ht4sa....")
-ht4sa_create_models<-function(){
-    e<-globalenv()
-    models<-list(length(e$ht4sa_recruitment_models))
-    recruitment_ids<-c(rep(0,length(e$ht4sa_recruitment_models)))
-    for(i in 1:length(e$ht4sa_recruitment_models)){
-        recruitment_ids[i]<-e$ht4sa_recruitment_models[[i]]$get_id()
+ht4sa_create_models <- function() {
+  e <- globalenv()
+  
+  recruitment_ids <- c(rep(0, length(e$ht4sa_recruitment_models)))
+  if (length(e$ht4sa_recruitment_models) > 0) {
+    for (i in 1:length(e$ht4sa_recruitment_models)) {
+      recruitment_ids[i] <- e$ht4sa_recruitment_models[[i]]$get_id()
     }
-    selectivity_ids<-c(rep(0,length(e$ht4sa_selectivity_models)))
-    for(i in 1:length(e$ht4sa_selectivity_models)){
-        selectivity_ids[i]<-e$ht4sa_selectivity_models[[i]]$get_id()
+  }else{
+    print("ht4sa_recruitment_models requires at least one entry")
+  }
+  
+  selectivity_ids <- c(rep(0, length(e$ht4sa_selectivity_models)))
+  if (length(e$ht4sa_selectivity_models) > 0) {
+    for (i in 1:length(e$ht4sa_selectivity_models)) {
+      selectivity_ids[i] <- e$ht4sa_selectivity_models[[i]]$get_id()
     }
-    growth_ids<-c(rep(0,length(e$ht4sa_growth_models)))
-    for(i in 1:length(e$ht4sa_growth_models)){
-        growth_ids[i]<-e$ht4sa_growth_models[[i]]$get_id()
+  }else{
+    print("ht4sa_selectivity_models requires at least one entry")
+  }
+  
+  growth_ids <- c(rep(0, length(e$ht4sa_growth_models)))
+  if (length(e$ht4sa_growth_models) > 0) {
+    for (i in 1:length(e$ht4sa_growth_models)) {
+      growth_ids[i] <- e$ht4sa_growth_models[[i]]$get_id()
     }
-    
-    models <- expand.grid(
-      recruitment =
-      recruitment_ids,
-      selectivity = selectivity_ids,
-      growth = growth_ids
-    )
-    
-    return (models)
+  }else{
+    print("ht4sa_growth_models requires at least one entry")
+  }
+  
+  models <- expand.grid(recruitment =
+                          recruitment_ids,
+                        selectivity = selectivity_ids,
+                        growth = growth_ids)
+  
+  return (models)
 }
 # Load the R MPI package if it is not already loaded.
 if (!is.loaded("mpi_initialize")) {
@@ -62,20 +75,25 @@ if (!is.loaded("mpi_initialize")) {
   }
 }
 
-setClass("EnsembleUnit", 
-         representation(
-           element = "character",
-           indices = "vector", #column-row
-           values="vector"))
+setClass(
+  "EnsembleUnit",
+  representation(
+    element = "character",
+    indices = "vector",
+    #column-row
+    values = "vector"
+  )
+)
 
-set_ensemble_element<-function(input = list(), 
-                               element = EnsembleUnit,
-                               index){
-  
-  if(length(element@indices)== 1){
-    input[[element@element]][[element@indices[1]]]<-element@values[index]
-  }else if(length(element@indices)== 2){
-    input[[element@element]][[element@indices[1]]][[element@indices[2]]]<-element@values[index]
+set_ensemble_element <- function(input = list(),
+                                 element = EnsembleUnit,
+                                 index) {
+  if (length(element@indices) == 1) {
+    input[[element@element]][[element@indices[1]]] <-
+      element@values[index]
+  } else if (length(element@indices) == 2) {
+    input[[element@element]][[element@indices[1]]][[element@indices[2]]] <-
+      element@values[index]
   }
   
   return(input)
@@ -86,87 +104,96 @@ set_ensemble_element<-function(input = list(),
 #helper class for recusively creating
 #parameter set.
 #
-setClass("RecursiveCombinations",
-         representation(
-           count = "integer",
-           current = "integer",
-           source = "list",
-           combos = "list"))
+setClass(
+  "RecursiveCombinations",
+  representation(
+    count = "integer",
+    current = "integer",
+    source = "list",
+    combos = "list"
+  )
+)
 
 
-ht4sa_ensemble_units<-list()
+ht4sa_ensemble_units <- list()
 
 
 #
-#Recursively creates a parameter set based 
+#Recursively creates a parameter set based
 #on all the possible combinations of parameters
 #in the Rcombos@source.
 #
-ht4sa_combinations<-function(current = as.integer(),working = vector(), Rcombos = "RecursiveCombinations"){
-  if (current == 1) {
-    # v= c();
-    for(i in 1:length(Rcombos@source[[1]])){
-      v=c()
-      v<- append(v, Rcombos@source[[1]][i])
-      Rcombos<-ht4sa_combinations(current+1,v,Rcombos)
-    }
-  } else if(current < length(Rcombos@source)){
-    for(i in 1:length(Rcombos@source[[current]])){
-      v = working;
-      v<-append(v,0)
+ht4sa_combinations <-
+  function(current = as.integer(),
+           working = vector(),
+           Rcombos = "RecursiveCombinations") {
+    if (current == 1) {
+      # v= c();
+      for (i in 1:length(Rcombos@source[[1]])) {
+        v = c()
+        v <- append(v, Rcombos@source[[1]][i])
+        Rcombos <- ht4sa_combinations(current + 1, v, Rcombos)
+      }
+    } else if (current < length(Rcombos@source)) {
+      for (i in 1:length(Rcombos@source[[current]])) {
+        v = working
+        
+        v <- append(v, 0)
+        for (i in 1:length(Rcombos@source[[current]])) {
+          v[length(v)] = Rcombos@source[[current]][i]
+          # Rcombos@current<-Rcombos@current+as.integer(1)
+          Rcombos <- ht4sa_combinations(current + 1, v, Rcombos)
+        }
+      }
+    } else{
+      v = working
+      
+      v <- append(v, 0)
       for (i in 1:length(Rcombos@source[[current]])) {
         v[length(v)] = Rcombos@source[[current]][i]
-        # Rcombos@current<-Rcombos@current+as.integer(1)
-        Rcombos <-ht4sa_combinations(current+1,v, Rcombos)
+        Rcombos@combos[[length(Rcombos@combos) + as.integer(1)]] <- v
+        Rcombos@count <- Rcombos@count + as.integer(1)
       }
+      
     }
-  }else{
-    v = working;
-    v<-append(v,0)
-    for (i in 1:length(Rcombos@source[[current]])) {
-      v[length(v)] = Rcombos@source[[current]][i]
-      Rcombos@combos[[length(Rcombos@combos)+as.integer(1)]]<-v
-      Rcombos@count<-Rcombos@count+as.integer(1)
-    }
-    
+    return(Rcombos)
   }
-  return(Rcombos)
-}
 
 
-ht4sa_create_ensemble_set<-function(source = list()){
-  rc<-new("RecursiveCombinations")
-  rc@count<-as.integer(1)
-  rc@current<-as.integer(1)
-  rc@source<-source
-  rc@combos<-list()
-  rcc<-ht4sa_combinations(1,working, rc)
+ht4sa_create_ensemble_set <- function(source = list()) {
+  rc <- new("RecursiveCombinations")
+  rc@count <- as.integer(1)
+  rc@current <- as.integer(1)
+  rc@source <- source
+  rc@combos <- list()
+  rcc <- ht4sa_combinations(1, working, rc)
   
   return(rcc@combos)
 }
 
 
-set_ensemble_element<-function(input = list(), 
-                               element = EnsembleUnit,
-                               index){
-  
-  if(length(element@indices)== 1){
-    input[[element@element]][[element@indices[1]]]<-element@values[index]
-  }else if(length(element@indices)== 2){
-    input[[element@element]][[element@indices[1]]][[element@indices[2]]]<-element@values[index]
+set_ensemble_element <- function(input = list(),
+                                 element = EnsembleUnit,
+                                 index) {
+  if (length(element@indices) == 1) {
+    input[[element@element]][[element@indices[1]]] <-
+      element@values[index]
+  } else if (length(element@indices) == 2) {
+    input[[element@element]][[element@indices[1]]][[element@indices[2]]] <-
+      element@values[index]
   }
   
   return(input)
 }
 
-set_ensemble_element<-function(input = list(), 
-                               element = EnsembleUnit,
-                               value = numeric){
-  
-  if(length(element@indices)== 1){
-    input[[element@element]][[element@indices[1]]]<-value
-  }else if(length(element@indices)== 2){
-    input[[element@element]][[element@indices[1]]][[element@indices[2]]]<-value
+set_ensemble_element <- function(input = list(),
+                                 element = EnsembleUnit,
+                                 value = numeric) {
+  if (length(element@indices) == 1) {
+    input[[element@element]][[element@indices[1]]] <- value
+  } else if (length(element@indices) == 2) {
+    input[[element@element]][[element@indices[1]]][[element@indices[2]]] <-
+      value
   }
   
   return(input)
@@ -201,7 +228,7 @@ run_ss_child <- function(testing_options_df,
     print(i)
     #_____________________________________________________________________________________________________________________________
     # define directory structure
-    model_name = paste0(testing_options_df[i, ], collapse = "_")
+    model_name = paste0(testing_options_df[i,], collapse = "_")
     dir_run = paste0(dir_model, model_name_stem, model_name, "/")
     dir.create(dir_run, recursive = TRUE, showWarnings = FALSE)
     dir_plot = paste0(proj_dir,
@@ -242,7 +269,7 @@ run_ss_child <- function(testing_options_df,
     # change SRR configuration from survival function to BH SRR
     tmp_ctl$SR_function = 3
     tmp_ctl$SR_parms$PR_type = 0
-    tmp_ctl$SR_parms = tmp_ctl$SR_parms[-3,]
+    tmp_ctl$SR_parms = tmp_ctl$SR_parms[-3, ]
     rownames(tmp_ctl$SR_parms)[2] = "SR_BH_steep"
     tmp_ctl$SR_parms$LO[2] = 0.2
     tmp_ctl$SR_parms$HI[2] = 1
@@ -420,7 +447,7 @@ run_ht4sa_ss_local <- function(testing_options_df,
   {
     #_____________________________________________________________________________________________________________________________
     # define directory structure
-    model_name = paste0(testing_options_df[i, ], collapse = "_")
+    model_name = paste0(testing_options_df[i,], collapse = "_")
     dir_run = paste0(dir_model, model_name_stem, model_name, "/")
     dir.create(dir_run, recursive = TRUE, showWarnings = FALSE)
     dir_plot = paste0(proj_dir,
@@ -461,7 +488,7 @@ run_ht4sa_ss_local <- function(testing_options_df,
     # change SRR configuration from survival function to BH SRR
     tmp_ctl$SR_function = 3
     tmp_ctl$SR_parms$PR_type = 0
-    tmp_ctl$SR_parms = tmp_ctl$SR_parms[-3,]
+    tmp_ctl$SR_parms = tmp_ctl$SR_parms[-3, ]
     rownames(tmp_ctl$SR_parms)[2] = "SR_BH_steep"
     tmp_ctl$SR_parms$LO[2] = 0.2
     tmp_ctl$SR_parms$HI[2] = 1

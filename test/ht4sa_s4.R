@@ -48,8 +48,8 @@ ht4sa_selectivity_models[[double_normal_selectivity_1$get_id()]] <-
 von_bertalanffy<-new(ht4sa$von_bertalanffy)
 ht4sa_growth_models[[von_bertalanffy$get_id()]] <-von_bertalanffy
 
-schnute<-new(ht4sa$schnute)
-ht4sa_growth_models[[schnute$get_id()]] <-schnute
+# schnute<-new(ht4sa$schnute)
+# ht4sa_growth_models[[schnute$get_id()]] <-schnute
 
 print(length(ht4sa_recruitment_models))
 #extract ids and create combinations
