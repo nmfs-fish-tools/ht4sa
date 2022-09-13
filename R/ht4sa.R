@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 library(r4ss)
 library(Rmpi)
 
