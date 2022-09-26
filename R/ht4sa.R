@@ -1,10 +1,8 @@
 library(r4ss)
 library(Rmpi)
 
-#model type enumerations
-HT4SA_RECRUITMENT <- 0
-HT4SA_SELECTIVITY <- 1
-HT4SA_GROWTH <- 2
+
+
 
 #s4 model lists
 ht4sa_recruitment_models <- list()
@@ -16,11 +14,20 @@ say2 <- function() {
 }
 print("loading ht4sa....")
 ht4sa_create_models <- function() {
+  #model type enumerations
+  HT4SA_RECRUITMENT <- 0
+  HT4SA_SELECTIVITY <- 1
+  HT4SA_GROWTH <- 2
+  
   e <- globalenv()
   
   recruitment_ids <- c(rep(0, length(e$ht4sa_recruitment_models)))
   if (length(e$ht4sa_recruitment_models) > 0) {
     for (i in 1:length(e$ht4sa_recruitment_models)) {
+        # if(!is.null(e$ht4sa_recruitment_models[[i]]) & e$ht4sa_recruitment_models[[i]]$category != HT4SA_RECRUITMENT){
+        #     print("Error: non recruitment model in ht4sa_recruitment list")
+        #     q()
+        # }
       recruitment_ids[i] <- e$ht4sa_recruitment_models[[i]]$get_id()
     }
   }else{
@@ -30,6 +37,10 @@ ht4sa_create_models <- function() {
   selectivity_ids <- c(rep(0, length(e$ht4sa_selectivity_models)))
   if (length(e$ht4sa_selectivity_models) > 0) {
     for (i in 1:length(e$ht4sa_selectivity_models)) {
+        # if(e$ht4sa_selectivity_models[[i]]$category != HT4SA_SELECTIVITY){
+        #     print("Error: non selectivity model in ht4sa_recruitment list")
+        #     q()
+        # }
       selectivity_ids[i] <- e$ht4sa_selectivity_models[[i]]$get_id()
     }
   }else{
@@ -39,6 +50,10 @@ ht4sa_create_models <- function() {
   growth_ids <- c(rep(0, length(e$ht4sa_growth_models)))
   if (length(e$ht4sa_growth_models) > 0) {
     for (i in 1:length(e$ht4sa_growth_models)) {
+        # if(e$ht4sa_growth_models[[i]]$category != HT4SA_GROWTH){
+        #     print("Error: non selectivity model in ht4sa_recruitment list")
+        #     q()
+        # }
       growth_ids[i] <- e$ht4sa_growth_models[[i]]$get_id()
     }
   }else{
