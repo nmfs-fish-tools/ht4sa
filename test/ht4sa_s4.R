@@ -18,6 +18,7 @@ beverton_holt_2 <- new(ht4sa$beverton_holt)
 ht4sa_recruitment_models[[beverton_holt_2$get_id()]] <-
   beverton_holt_2
 
+
 beverton_holt_3 <- new(ht4sa$beverton_holt)
 ht4sa_recruitment_models[[beverton_holt_3$get_id()]] <-
   beverton_holt_3
